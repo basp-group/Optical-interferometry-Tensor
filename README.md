@@ -6,8 +6,8 @@ DESCRIPTION
   This is a Matlab implementation of the tensor-based algorithms for
   optical-interferometric imaging presented in:
   
-    [1] A. Auria, R. E. Carrillo, J.-P. Thiran and Y. Wiaux. "Convex optimisation for optical-interferometric imaging", submitted 
-    to Monthly Notices of the Royal Astronomical Society, 2013.
+    [1] A. Auria, R. E. Carrillo, J.-P. Thiran and Y. Wiaux. "Convex optimisation for optical-interferometric imaging", 
+    submitted to Monthly Notices of the Royal Astronomical Society, 2013.
 
 AUTHORS
   A. Auria (http://people.epfl.ch/anna.auria),
@@ -18,9 +18,9 @@ AUTHORS
 
 REFERENCES
   When referencing this code, please cite our related paper:
-    [1] A. Auria, R. E. Carrillo, J.-P. Thiran and Y. Wiaux.  
-    "Convex optimisation for optical-interferometric imaging", submitted 
-    to Monthly Notices of the Royal Astronomical Society, 2013.
+  
+    [1] A. Auria, R. E. Carrillo, J.-P. Thiran and Y. Wiaux. "Convex optimisation for optical-interferometric imaging", 
+    submitted to Monthly Notices of the Royal Astronomical Society, 2013.
 
 
 DOWNLOAD
