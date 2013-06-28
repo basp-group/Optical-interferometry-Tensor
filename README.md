@@ -5,15 +5,16 @@ CO4OI: Convex Optimisation for Optical Interferometry
 DESCRIPTION
   This is a Matlab implementation of the tensor-based algorithms for
   optical-interferometric imaging presented in:
+  
     [1] A. Auria, R. E. Carrillo, J.-P. Thiran and Y. Wiaux.  
     "Convex optimisation for optical-interferometric imaging", submitted 
     to Monthly Notices of the Royal Astronomical Society, 2013.
 
 AUTHORS
-  A. Auria (http://people.epfl.ch/anna.auria)
-  R. E. Carillo (http://people.epfl.ch/rafael.carrillo)
-  J.-P. Thiran (http://people.epfl.ch/jean-philippe.thiran)
-  Y. Wiaux (http://people.epfl.ch/yves.wiaux)
+  A. Auria (http://people.epfl.ch/anna.auria),
+  R. E. Carillo (http://people.epfl.ch/rafael.carrillo),
+  J.-P. Thiran (http://people.epfl.ch/jean-philippe.thiran),
+  Y. Wiaux (http://people.epfl.ch/yves.wiaux),
 
 
 REFERENCES
