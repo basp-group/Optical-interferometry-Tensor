@@ -1,0 +1,216 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of fast_proj_nm</title>
+  <meta name="keywords" content="fast_proj_nm">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="../../index.html">CO4OI</a> &gt; <a href="#">Solvers</a> &gt; <a href="index.html">NM_solvers</a> &gt; fast_proj_nm.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for CO4OI/Solvers/NM_solvers&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>fast_proj_nm
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [sol, u] = fast_proj_nm(x, param) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> 
+
+ sol = fast_proj_NM(x, param) solves:
+
+   min_{Z} ||CZ||_* + 1/2*||Z-X||^2 s.t. CZ \succeq 0 and Z \in R_+
+
+   
+
+ param a Matlab structure containing the following fields:
+  
+
+   - C: Forward operator (default: Id).
+
+   - Ct: Adjoint operator (default: Id).
+
+   - tight: 1 if C is a tight frame or 0 if not (default = 1)
+
+   - nu: bound on the norm of the operator C, i.e.
+       ||C x||^2 &lt;= nu * ||x||^2 (default: 1)
+
+   - lambda: parameter used for the soft-thresholding operator
+
+   - pos: positivity flag 
+
+   - real: reality flag
+
+   - max_iter: max. nb. of iterations (default: 200).
+
+   - verbose: 0 no log, 1 a summary at convergence, 2 print main
+   steps (default: 1)
+
+ 
+
+ References:
+ [1] M.J. Fadili and J-L. Starck, &quot;Monotone operator splitting for
+ optimization problems in sparse recovery&quot; , IEEE ICIP, Cairo,
+ Egypt, 2009.
+ [2] Amir Beck and Marc Teboulle, &quot;A Fast Iterative Shrinkage-Thresholding
+ Algorithm for Linear Inverse Problems&quot;,  SIAM Journal on Imaging Sciences
+ 2 (2009), no. 1, 183--202.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="solve_nm.html" class="code" title="function sol = solve_nm(y, param)">solve_nm</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [sol, u] = fast_proj_nm(x, param)</a>
+0002 <span class="comment">%</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% sol = fast_proj_NM(x, param) solves:</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%   min_{Z} ||CZ||_* + 1/2*||Z-X||^2 s.t. CZ \succeq 0 and Z \in R_+</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% param a Matlab structure containing the following fields:</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%   - C: Forward operator (default: Id).</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   - Ct: Adjoint operator (default: Id).</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%   - tight: 1 if C is a tight frame or 0 if not (default = 1)</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%   - nu: bound on the norm of the operator C, i.e.</span>
+0020 <span class="comment">%       ||C x||^2 &lt;= nu * ||x||^2 (default: 1)</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">%   - lambda: parameter used for the soft-thresholding operator</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">%   - pos: positivity flag</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">%   - real: reality flag</span>
+0027 <span class="comment">%</span>
+0028 <span class="comment">%   - max_iter: max. nb. of iterations (default: 200).</span>
+0029 <span class="comment">%</span>
+0030 <span class="comment">%   - verbose: 0 no log, 1 a summary at convergence, 2 print main</span>
+0031 <span class="comment">%   steps (default: 1)</span>
+0032 <span class="comment">%</span>
+0033 <span class="comment">%</span>
+0034 <span class="comment">%</span>
+0035 <span class="comment">% References:</span>
+0036 <span class="comment">% [1] M.J. Fadili and J-L. Starck, &quot;Monotone operator splitting for</span>
+0037 <span class="comment">% optimization problems in sparse recovery&quot; , IEEE ICIP, Cairo,</span>
+0038 <span class="comment">% Egypt, 2009.</span>
+0039 <span class="comment">% [2] Amir Beck and Marc Teboulle, &quot;A Fast Iterative Shrinkage-Thresholding</span>
+0040 <span class="comment">% Algorithm for Linear Inverse Problems&quot;,  SIAM Journal on Imaging Sciences</span>
+0041 <span class="comment">% 2 (2009), no. 1, 183--202.</span>
+0042 <span class="comment">%</span>
+0043 
+0044 
+0045 <span class="comment">% Optional input arguments</span>
+0046 
+0047 N=param.N;
+0048 
+0049 
+0050 <span class="keyword">if</span> ~isfield(param, <span class="string">'tight'</span>), param.tight = 0; <span class="keyword">end</span>
+0051 <span class="keyword">if</span> ~isfield(param, <span class="string">'rel_obj'</span>), param.rel_obj = 1e-3; <span class="keyword">end</span>
+0052 <span class="keyword">if</span> ~isfield(param, <span class="string">'verbose'</span>), param.verbose = 1; <span class="keyword">end</span>
+0053 <span class="keyword">if</span> ~isfield(param, <span class="string">'nu'</span>), param.nu = 1; <span class="keyword">end</span>
+0054 <span class="keyword">if</span> ~isfield(param, <span class="string">'max_iter'</span>), param.max_iter = 200; <span class="keyword">end</span>
+0055 <span class="keyword">if</span> ~isfield(param, <span class="string">'u'</span>), param.u = zeros(N*N,1); <span class="keyword">end</span>
+0056 <span class="keyword">if</span> ~isfield(param, <span class="string">'pos'</span>), param.pos = 0; <span class="keyword">end</span>
+0057 <span class="keyword">if</span> ~isfield(param, <span class="string">'real'</span>), param.real = 0; <span class="keyword">end</span>
+0058 
+0059 
+0060 
+0061 <span class="comment">% Useful functions for the projection</span>
+0062 sc = @(z) z*min(param.epsilon/norm(z(:)), 1); <span class="comment">% scaling</span>
+0063 
+0064 <span class="comment">% Compute proximal operator</span>
+0065 <span class="keyword">if</span> (param.tight &amp;&amp; ~(param.pos||param.real)) <span class="comment">% TIGHT FRAME CASE</span>
+0066     
+0067     temp = param.C(x,N) - param.y;
+0068     sol = x + 1/param.nu * param.Ct(sc(temp)-temp);
+0069     crit_NM = <span class="string">'TOL_EPS'</span>; iter = 0;
+0070     u = 0;
+0071     
+0072 <span class="keyword">else</span> <span class="comment">% NON TIGHT FRAME CASE</span>
+0073     
+0074     <span class="comment">% Initializations</span>
+0075     sol = x; u = param.u; v = u;
+0076     iter = 1; true = 1; told = 1;
+0077     of=0; 
+0078    
+0079     <span class="keyword">while</span> true
+0080         
+0081         <span class="comment">% Current estimate</span>
+0082         dummy=x-param.Ct(u);
+0083         
+0084         <span class="comment">% projection (real)positive orthant</span>
+0085         sol=real(dummy);
+0086         sol(sol&lt;0)=0;
+0087         
+0088         <span class="comment">% Evaluation Objective function</span>
+0089         of_old=of;
+0090         
+0091         [V,Sigma] = svd(reshape(param.C(sol),N,N));
+0092         aux=diag(Sigma); <span class="comment">%vector with the singular values</span>
+0093         of=sum(aux(:)) + 0.5*norm(sol(:)-x(:),<span class="string">'fro'</span>)^2;
+0094         
+0095         rel_var=abs(of - of_old)/abs(of_old);
+0096         
+0097         <span class="comment">% Stopping criterion</span>
+0098         <span class="keyword">if</span> (rel_var&lt;param.rel_obj)
+0099             crit_NM = <span class="string">'TOL_OBJ_FUNC'</span>; <span class="keyword">break</span>;
+0100         <span class="keyword">elseif</span> iter &gt;= param.max_iter
+0101             crit_NM = <span class="string">'MAX_IT'</span>; <span class="keyword">break</span>;
+0102         <span class="keyword">end</span>
+0103         
+0104         <span class="comment">% FISTA update</span>
+0105         t = (1+sqrt(1+4*told^2))/2;
+0106         u = v; 
+0107         z=param.nu*u + param.C(sol);
+0108         
+0109         <span class="comment">%prox nuclear norm (+ PSD constraint)</span>
+0110         v=1/param.nu*(z - soft_sgv(z,param.N,param.nu*param.lambda));
+0111         u = v + (told-1)/t * (v - u);
+0112         
+0113         
+0114         <span class="comment">% Update number of iteration</span>
+0115         told = t;
+0116         
+0117         <span class="comment">% Update number of iterations</span>
+0118         iter = iter + 1;
+0119         
+0120     <span class="keyword">end</span>
+0121 <span class="keyword">end</span>
+0122 
+0123 <span class="comment">% Log</span>
+0124 <span class="keyword">if</span> param.verbose &gt;= 1
+0125     
+0126     fprintf([<span class="string">'  Proj. NN: obj func= %e, , crit=%s, iter = %i\n'</span>], of, crit_NM, iter);
+0127 <span class="keyword">end</span>
+0128 
+0129 
+0130 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 18-Jul-2013 19:25:15 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

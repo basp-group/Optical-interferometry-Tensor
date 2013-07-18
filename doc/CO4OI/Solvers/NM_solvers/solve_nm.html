@@ -1,0 +1,283 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of solve_nm</title>
+  <meta name="keywords" content="solve_nm">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="../../index.html">CO4OI</a> &gt; <a href="#">Solvers</a> &gt; <a href="index.html">NM_solvers</a> &gt; solve_nm.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for CO4OI/Solvers/NM_solvers&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>solve_nm
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function sol = solve_nm(y, param) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">
+ Douglas-Rachford splitting algorithm [1] to the Tensor Recovery problem 
+ 
+ solve_nm - Solve NM problem. 
+
+
+   min ||CX||_*   s.t.  ||y-AX||_2 &lt; epsilon, CX \succeq 0, X \in R_+
+
+ INPUTS
+   - y contains the measurements. 
+
+   - param is a Matlab structure containing the following fields:
+
+   General parameters:
+ 
+   - verbose: 0 no log, 1 print main steps, 2 print all steps.
+
+   - N: dimension of the signal
+
+   - max_iter: max. nb. of iterations (default: 200).
+
+   - rel_obj: minimum relative change of the solution (default:
+   1e-4)
+       The algorithm stops if
+           | ||x(t)||_2 - ||x(t-1)||_2 | / ||x(t)||_2 &lt; rel_obj,
+       where x(t) is the estimate of the solution at iteration t.
+
+    
+   Projection onto the L2-ball :
+
+   - A: Forward operator // At: Adjoint operator
+
+   - param.tightB2: 1 if A is a tight frame or 0 if not (default = 1)
+ 
+   - nuB2: bound on the norm of the operator A, i.e.
+       ||A x||^2 &lt;= nu * ||x||^2 (default: 1)
+
+   
+   Proximal NM operator:
+
+   - C: Forward operator // Ct: Adjoint operator
+
+   - rel_obj_NM: Used as stopping criterion for the proximal NM
+   operator. Min. relative change of the objective value between two
+   successive estimates.
+
+   - max_iter_NM: Used as stopping criterion for the proximal NM
+   operator. Maximun number of iterations.
+ 
+   - param.nu_NM: bound on the norm^2 of the operator C, i.e.
+       ||C x||^2 &lt;= nu * ||x||^2 (default: 1)
+ 
+   - param.tight_NM: 1 if Ct is a tight frame or 0 if not (default = 1)          
+
+
+ OUTPUT
+   - sol: solution of the problem.
+
+
+ The problem is solved thanks to a Douglas-Rachford splitting
+ algorithm.
+ 
+ 
+
+ References:
+ [1] P. L. Combettes and J-C. Pesquet, &quot;A Douglas-Rachford Splitting 
+ Approach to Nonsmooth Convex Variational Signal Recovery&quot;, IEEE Journal
+ of Selected Topics in Signal Processing, vol. 1, no. 4, pp. 564-574, 2007.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="fast_proj_b2.html" class="code" title="function [sol, u] = fast_proj_b2(x, param)">fast_proj_b2</a>	PROJ_B2 - Projection onto a L2-ball</li><li><a href="fast_proj_nm.html" class="code" title="function [sol, u] = fast_proj_nm(x, param)">fast_proj_nm</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function sol = solve_nm(y, param)</a>
+0002 <span class="comment">%</span>
+0003 <span class="comment">% Douglas-Rachford splitting algorithm [1] to the Tensor Recovery problem</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% solve_nm - Solve NM problem.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%   min ||CX||_*   s.t.  ||y-AX||_2 &lt; epsilon, CX \succeq 0, X \in R_+</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% INPUTS</span>
+0011 <span class="comment">%   - y contains the measurements.</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%   - param is a Matlab structure containing the following fields:</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   General parameters:</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%   - verbose: 0 no log, 1 print main steps, 2 print all steps.</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%   - N: dimension of the signal</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">%   - max_iter: max. nb. of iterations (default: 200).</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">%   - rel_obj: minimum relative change of the solution (default:</span>
+0024 <span class="comment">%   1e-4)</span>
+0025 <span class="comment">%       The algorithm stops if</span>
+0026 <span class="comment">%           | ||x(t)||_2 - ||x(t-1)||_2 | / ||x(t)||_2 &lt; rel_obj,</span>
+0027 <span class="comment">%       where x(t) is the estimate of the solution at iteration t.</span>
+0028 <span class="comment">%</span>
+0029 <span class="comment">%</span>
+0030 <span class="comment">%   Projection onto the L2-ball :</span>
+0031 <span class="comment">%</span>
+0032 <span class="comment">%   - A: Forward operator // At: Adjoint operator</span>
+0033 <span class="comment">%</span>
+0034 <span class="comment">%   - param.tightB2: 1 if A is a tight frame or 0 if not (default = 1)</span>
+0035 <span class="comment">%</span>
+0036 <span class="comment">%   - nuB2: bound on the norm of the operator A, i.e.</span>
+0037 <span class="comment">%       ||A x||^2 &lt;= nu * ||x||^2 (default: 1)</span>
+0038 <span class="comment">%</span>
+0039 <span class="comment">%</span>
+0040 <span class="comment">%   Proximal NM operator:</span>
+0041 <span class="comment">%</span>
+0042 <span class="comment">%   - C: Forward operator // Ct: Adjoint operator</span>
+0043 <span class="comment">%</span>
+0044 <span class="comment">%   - rel_obj_NM: Used as stopping criterion for the proximal NM</span>
+0045 <span class="comment">%   operator. Min. relative change of the objective value between two</span>
+0046 <span class="comment">%   successive estimates.</span>
+0047 <span class="comment">%</span>
+0048 <span class="comment">%   - max_iter_NM: Used as stopping criterion for the proximal NM</span>
+0049 <span class="comment">%   operator. Maximun number of iterations.</span>
+0050 <span class="comment">%</span>
+0051 <span class="comment">%   - param.nu_NM: bound on the norm^2 of the operator C, i.e.</span>
+0052 <span class="comment">%       ||C x||^2 &lt;= nu * ||x||^2 (default: 1)</span>
+0053 <span class="comment">%</span>
+0054 <span class="comment">%   - param.tight_NM: 1 if Ct is a tight frame or 0 if not (default = 1)</span>
+0055 <span class="comment">%</span>
+0056 <span class="comment">%</span>
+0057 <span class="comment">% OUTPUT</span>
+0058 <span class="comment">%   - sol: solution of the problem.</span>
+0059 <span class="comment">%</span>
+0060 <span class="comment">%</span>
+0061 <span class="comment">% The problem is solved thanks to a Douglas-Rachford splitting</span>
+0062 <span class="comment">% algorithm.</span>
+0063 <span class="comment">%</span>
+0064 <span class="comment">%</span>
+0065 <span class="comment">%</span>
+0066 <span class="comment">% References:</span>
+0067 <span class="comment">% [1] P. L. Combettes and J-C. Pesquet, &quot;A Douglas-Rachford Splitting</span>
+0068 <span class="comment">% Approach to Nonsmooth Convex Variational Signal Recovery&quot;, IEEE Journal</span>
+0069 <span class="comment">% of Selected Topics in Signal Processing, vol. 1, no. 4, pp. 564-574, 2007.</span>
+0070 
+0071 
+0072 
+0073 <span class="comment">% Optional input arguments</span>
+0074 <span class="keyword">if</span> ~isfield(param, <span class="string">'verbose'</span>), param.verbose = 1; <span class="keyword">end</span>
+0075 <span class="keyword">if</span> ~isfield(param, <span class="string">'rel_obj'</span>), param.rel_obj = 1e-4; <span class="keyword">end</span>
+0076 <span class="keyword">if</span> ~isfield(param, <span class="string">'max_iter'</span>), param.max_iter = 200; <span class="keyword">end</span>
+0077 
+0078 <span class="comment">% Input parameters for projection onto the L2 ball</span>
+0079 param_B2.A = param.A; param_B2.At = param.At;
+0080 param_B2.y = y; param_B2.epsilon = param.epsilon;
+0081 param_B2.epsilon_up = param.epsilon_up;
+0082 param_B2.epsilon_low = param.epsilon_low;
+0083 param_B2.verbose = param.verboseB2;
+0084 param_B2.nu = param.nuB2;
+0085 param_B2.tol=1e-3; <span class="comment">%cal? com?</span>
+0086 param_B2.max_iter =0; <span class="comment">%cal? com?</span>
+0087 param_B2.tight = param.tightB2;
+0088 param_B2.pos=0;
+0089 param_B2.real=0;
+0090 
+0091 <span class="comment">% Input parameters for prox NM</span>
+0092 param_NM.pos = 1;
+0093 param_NM.real = 1;
+0094 param_NM.C=param.C;
+0095 param_NM.Ct=param.Ct;
+0096 param_NM.lambda=param.lambda_NM;
+0097 param_NM.verbose = param.verbose_NM; 
+0098 
+0099 param_NM.rel_obj = param.rel_obj_NM;
+0100 param_NM.N=param.N;
+0101 param_NM.nu=param.nu_NM;
+0102 param_NM.max_iter = param.max_iter_NM;
+0103 
+0104 
+0105 <span class="comment">% Initialization</span>
+0106 <span class="keyword">if</span> isfield(param,<span class="string">'xinit'</span>)
+0107     xhat = param.xinit;
+0108 <span class="keyword">else</span>
+0109     xhat = param.At(y); 
+0110 <span class="keyword">end</span>
+0111 
+0112 iter = 1; prev_sol = 0;
+0113 
+0114 <span class="comment">% Main loop</span>
+0115 <span class="keyword">while</span> 1
+0116     
+0117     
+0118     <span class="keyword">if</span> param.verbose &gt;= 1
+0119         fprintf(<span class="string">'Iteration %i:\n'</span>, iter);
+0120     <span class="keyword">end</span>
+0121     
+0122     
+0123     <span class="comment">% Projection onto the L2-ball</span>
+0124     [sol, param_B2.u] = <a href="fast_proj_b2.html" class="code" title="function [sol, u] = fast_proj_b2(x, param)">fast_proj_b2</a>(xhat, param_B2);
+0125     
+0126     <span class="comment">% Global stopping criterion</span>
+0127     rel_var=norm(sol-prev_sol)/norm(prev_sol);
+0128     prev_sol=sol;
+0129    
+0130 
+0131     <span class="keyword">if</span> param.verbose &gt;= 1
+0132         fprintf(<span class="string">'  rel_var = %e\n'</span>, <span class="keyword">...</span>
+0133              rel_var);
+0134     <span class="keyword">end</span>
+0135     <span class="keyword">if</span> (rel_var &lt; param.rel_obj)
+0136         crit_BPDN = <span class="string">'REL_NORM'</span>;
+0137         <span class="keyword">break</span>;
+0138     <span class="keyword">elseif</span> iter &gt;= param.max_iter
+0139         crit_BPDN = <span class="string">'MAX_IT'</span>;
+0140         <span class="keyword">break</span>;
+0141     <span class="keyword">end</span>
+0142      
+0143     <span class="comment">% Proximal NM function and DR update</span>
+0144     xhat = 2*sol - xhat;
+0145     temp = <a href="fast_proj_nm.html" class="code" title="function [sol, u] = fast_proj_nm(x, param)">fast_proj_nm</a>(xhat, param_NM);
+0146     xhat = temp + sol - xhat;
+0147     
+0148     <span class="comment">% Update variables</span>
+0149     iter = iter + 1;
+0150     
+0151     
+0152 <span class="keyword">end</span>
+0153 
+0154 <span class="comment">% Log</span>
+0155 <span class="keyword">if</span> param.verbose&gt;=1
+0156     
+0157     fprintf(<span class="string">'\n Solution found:\n'</span>);
+0158     
+0159     <span class="comment">% Residual</span>
+0160     dummy = param.A(sol); res = norm(y(:)-dummy(:), 2);
+0161     fprintf(<span class="string">' epsilon = %e, ||y-Ax||_2=%e\n'</span>, param.epsilon , res);
+0162     
+0163     <span class="comment">% Stopping criterion</span>
+0164     fprintf(<span class="string">' %i iterations\n'</span>, iter);
+0165     fprintf(<span class="string">' Stopping criterion: %s \n\n'</span>, crit_BPDN);
+0166     
+0167 <span class="keyword">end</span>
+0168 
+0169 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 18-Jul-2013 19:25:15 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

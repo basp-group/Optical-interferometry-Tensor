@@ -1,0 +1,191 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of mask_3D_3</title>
+  <meta name="keywords" content="mask_3D_3">
+  <meta name="description" content="mask_3D_3 generates a sampling pattern of the 3D-cube">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">CO4OI</a> &gt; <a href="index.html">misc</a> &gt; mask_3D_3.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for CO4OI/misc&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>mask_3D_3
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>mask_3D_3 generates a sampling pattern of the 3D-cube</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [ T ] = mask_3D_3( n,m,p, sigmau, sigmav, sigmaw ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> mask_3D_3 generates a sampling pattern of the 3D-cube
+
+ The sampling pattern is obtained by sampling frequencies along each of the 3 
+ tensor dimensions from a bidimensional Gaussian profile in the corresponding Fourier plane. 
+ The procedure is repeated until M samples are obtained. 
+ Note that the originally continuous frequencies are associated with their nearest discrete neighbour, 
+ and if a product is sampled twice the result is discarded.
+
+ INPUTS
+
+   N=n*m dimension of the signal
+   p: M/N (ratio measurements/dim signal) required
+   sigmau,sigmav,sigmaw: correspond to the stdev of the Gaussian profile for
+   the 3 dimensions
+
+ OUTPUT
+
+   T table M rows (number of sampled triplets), 3 columns (each
+   frequency of the triplet)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ T ] = mask_3D_3( n,m,p, sigmau, sigmav, sigmaw )</a>
+0002 
+0003 <span class="comment">% mask_3D_3 generates a sampling pattern of the 3D-cube</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% The sampling pattern is obtained by sampling frequencies along each of the 3</span>
+0006 <span class="comment">% tensor dimensions from a bidimensional Gaussian profile in the corresponding Fourier plane.</span>
+0007 <span class="comment">% The procedure is repeated until M samples are obtained.</span>
+0008 <span class="comment">% Note that the originally continuous frequencies are associated with their nearest discrete neighbour,</span>
+0009 <span class="comment">% and if a product is sampled twice the result is discarded.</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% INPUTS</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%   N=n*m dimension of the signal</span>
+0014 <span class="comment">%   p: M/N (ratio measurements/dim signal) required</span>
+0015 <span class="comment">%   sigmau,sigmav,sigmaw: correspond to the stdev of the Gaussian profile for</span>
+0016 <span class="comment">%   the 3 dimensions</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% OUTPUT</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">%   T table M rows (number of sampled triplets), 3 columns (each</span>
+0021 <span class="comment">%   frequency of the triplet)</span>
+0022 
+0023 
+0024 
+0025 
+0026 nmeas=n*m*p;
+0027 
+0028 [x,y] = meshgrid(linspace(-1, 1, m), linspace(-1, 1, n)); <span class="comment">% Cartesian grid</span>
+0029 r = sqrt(x.^2+y.^2); r = r/max(r(:)); <span class="comment">% Polar grid</span>
+0030 
+0031 
+0032 meas=0; mask=zeros(n,m);
+0033 T=zeros(nmeas,3);
+0034 
+0035 <span class="keyword">while</span> meas&lt;nmeas
+0036 
+0037     u=randn(1,2)*sigmau;
+0038     
+0039     <span class="comment">% find the nearest neighbor on the discrete grid</span>
+0040     d=2;idx_min=0;
+0041     <span class="keyword">for</span> idx=1:n
+0042         <span class="keyword">if</span> abs(u(1,1)-x(1,idx))&lt; d
+0043             idx_min=idx; d=abs(u(1,1)-x(1,idx));
+0044         <span class="keyword">end</span>
+0045     <span class="keyword">end</span>
+0046     ux=idx_min;
+0047 
+0048     d=2;idy_min=0;
+0049     <span class="keyword">for</span> idy=1:n
+0050         <span class="keyword">if</span> abs(u(1,2)-y(idy,1))&lt; d
+0051             idy_min=idy; d=abs(u(1,2)-y(idy,1));
+0052         <span class="keyword">end</span>
+0053     <span class="keyword">end</span>
+0054     uy=idy_min;
+0055     
+0056     <span class="comment">% find frequency index</span>
+0057     mask(ux,uy)=1; mask=ifftshift(mask);
+0058     u=find(mask(:));
+0059     mask=zeros(n,m);
+0060     
+0061     v=randn(1,2)*sigmav;
+0062     
+0063     <span class="comment">% find the nearest neighbor on the discrete grid</span>
+0064     d=2;idx_min=0;
+0065     <span class="keyword">for</span> idx=1:n
+0066         <span class="keyword">if</span> abs(v(1,1)-x(1,idx))&lt; d
+0067             idx_min=idx; d=abs(v(1,1)-x(1,idx));
+0068         <span class="keyword">end</span>
+0069     <span class="keyword">end</span>
+0070     vx=idx_min;
+0071 
+0072     d=2;idy_min=0;
+0073     <span class="keyword">for</span> idy=1:n
+0074         <span class="keyword">if</span> abs(v(1,2)-y(idy,1))&lt; d
+0075             idy_min=idy; d=abs(v(1,2)-y(idy,1));
+0076         <span class="keyword">end</span>
+0077     <span class="keyword">end</span>
+0078     vy=idy_min;
+0079     
+0080     <span class="comment">% find frequency index</span>
+0081     mask(vx,vy)=1; mask=ifftshift(mask);
+0082     v=find(mask(:));
+0083     mask=zeros(n,m);
+0084     
+0085     w=randn(1,2)*sigmaw;
+0086 
+0087     <span class="comment">% find the nearest neighbor on the discrete grid</span>
+0088     d=2;idx_min=0;
+0089     <span class="keyword">for</span> idx=1:n
+0090         <span class="keyword">if</span> abs(w(1,1)-x(1,idx))&lt; d
+0091             idx_min=idx; d=abs(w(1,1)-x(1,idx));
+0092         <span class="keyword">end</span>
+0093     <span class="keyword">end</span>
+0094     wx=idx_min;
+0095 
+0096     d=2;idy_min=0;
+0097     <span class="keyword">for</span> idy=1:n
+0098         <span class="keyword">if</span> abs(w(1,2)-y(idy,1))&lt; d
+0099             idy_min=idy; d=abs(w(1,2)-y(idy,1));
+0100         <span class="keyword">end</span>
+0101     <span class="keyword">end</span>
+0102     wy=idy_min;
+0103     
+0104     <span class="comment">% find frequency index</span>
+0105     mask(wx,wy)=1; mask=ifftshift(mask);
+0106     w=find(mask(:));
+0107     mask=zeros(n,m);
+0108     
+0109     
+0110     V=sort([u,v,w],<span class="string">'descend'</span>); <span class="comment">% predefined descending order</span>
+0111     
+0112     <span class="keyword">if</span> ismember(T,V,<span class="string">'rows'</span>)==zeros(size(V,1))
+0113         T(meas+1,:)=V;
+0114         meas=meas+1;
+0115     <span class="keyword">end</span>
+0116     
+0117 <span class="keyword">end</span>
+0118     
+0119     <span class="keyword">if</span> isempty(find(all(T==1,2)))
+0120         T(meas+1,:)=[1,1,1]; <span class="comment">% open the mask for the F0 frequency</span>
+0121     <span class="keyword">end</span>
+0122 
+0123 
+0124 
+0125 <span class="keyword">end</span>
+0126</pre></div>
+<hr><address>Generated on Thu 18-Jul-2013 19:25:15 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,244 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of solve_fb_bt</title>
+  <meta name="keywords" content="solve_fb_bt">
+  <meta name="description" content="solve_fb_bt - solve the following problem">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="../../index.html">CO4OI</a> &gt; <a href="#">Solvers</a> &gt; <a href="index.html">AM_solvers</a> &gt; solve_fb_bt.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for CO4OI/Solvers/AM_solvers&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>solve_fb_bt
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>solve_fb_bt - solve the following problem</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [sol, crit_ncFB] = solve_fb_bt(y, param) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> solve_fb_bt - solve the following problem
+
+ Solves min ||A*sol - y||_2^2 s.t. sol \in R_+,
+
+   based on the FAST ITERATIVE SHRINKAGE-THRESHOLDING ALGORITHM (with
+   a backtracking line search procedure) described in [1]
+
+   INPUT
+       - y: vector of measurements
+       - param: data structure with parameters of the algorithm
+
+   OUTPUT
+       - sol: local solution
+       - crit_ncFB: stoping criteria used
+
+   param is a Matlab structure containing:
+
+   General parameters:
+ 
+   - verbose: 0 no log, 1 print main steps, 2 print all steps.
+
+   - n,m: dimensions of the sought image
+
+   - A and At: operator and its adjoint
+
+   - T: table indicating the probed triplets of frequencies
+
+   - max_iter: max. nb. of iterations (default: 200).
+
+
+   Parameters for the backtracking procedure in Forward-Backward Algorithm
+
+   - L: initial approximation Lipsitsz constant
+
+   - eta: tuning parameter (to find the optimal step size in the gradient step)
+
+   - max_iter_BT: max. nb. of iterations (backtracking)
+
+
+ References
+ [1] A. Beck and M. Teboulle, &quot;A Fast Iterative Shrinkage-Thresholding Algorithm for Linear Inverse
+ Problems&quot;
+ 2009 Society for Industrial and Applied Mathematics Vol. 2, No. 1, pp. 183?202</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="grad_of.html" class="code" title="function [ g ] = grad_of( x, y, F, Ft )">grad_of</a>	grad_of - computes the gradient of the function .5*||Fx-y||_2^2,</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="solve_am.html" class="code" title="function [sol, of, crit_AM]=solve_am(ymeas, param)">solve_am</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [sol, crit_ncFB] = solve_fb_bt(y, param)</a>
+0002 
+0003 <span class="comment">% solve_fb_bt - solve the following problem</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% Solves min ||A*sol - y||_2^2 s.t. sol \in R_+,</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   based on the FAST ITERATIVE SHRINKAGE-THRESHOLDING ALGORITHM (with</span>
+0008 <span class="comment">%   a backtracking line search procedure) described in [1]</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   INPUT</span>
+0011 <span class="comment">%       - y: vector of measurements</span>
+0012 <span class="comment">%       - param: data structure with parameters of the algorithm</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%   OUTPUT</span>
+0015 <span class="comment">%       - sol: local solution</span>
+0016 <span class="comment">%       - crit_ncFB: stoping criteria used</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%   param is a Matlab structure containing:</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">%   General parameters:</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">%   - verbose: 0 no log, 1 print main steps, 2 print all steps.</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">%   - n,m: dimensions of the sought image</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">%   - A and At: operator and its adjoint</span>
+0027 <span class="comment">%</span>
+0028 <span class="comment">%   - T: table indicating the probed triplets of frequencies</span>
+0029 <span class="comment">%</span>
+0030 <span class="comment">%   - max_iter: max. nb. of iterations (default: 200).</span>
+0031 <span class="comment">%</span>
+0032 <span class="comment">%</span>
+0033 <span class="comment">%   Parameters for the backtracking procedure in Forward-Backward Algorithm</span>
+0034 <span class="comment">%</span>
+0035 <span class="comment">%   - L: initial approximation Lipsitsz constant</span>
+0036 <span class="comment">%</span>
+0037 <span class="comment">%   - eta: tuning parameter (to find the optimal step size in the gradient step)</span>
+0038 <span class="comment">%</span>
+0039 <span class="comment">%   - max_iter_BT: max. nb. of iterations (backtracking)</span>
+0040 <span class="comment">%</span>
+0041 <span class="comment">%</span>
+0042 <span class="comment">% References</span>
+0043 <span class="comment">% [1] A. Beck and M. Teboulle, &quot;A Fast Iterative Shrinkage-Thresholding Algorithm for Linear Inverse</span>
+0044 <span class="comment">% Problems&quot;</span>
+0045 <span class="comment">% 2009 Society for Industrial and Applied Mathematics Vol. 2, No. 1, pp. 183?202</span>
+0046 
+0047 
+0048 
+0049 
+0050 <span class="comment">% Optional input arguments</span>
+0051 <span class="keyword">if</span> ~isfield(param, <span class="string">'verbose'</span>), param.verbose = 1; <span class="keyword">end</span>
+0052 <span class="keyword">if</span> ~isfield(param, <span class="string">'rel_obj'</span>), param.rel_obj = 1e-3; <span class="keyword">end</span>
+0053 <span class="keyword">if</span> ~isfield(param, <span class="string">'max_iter'</span>), param.max_iter = 200; <span class="keyword">end</span>
+0054 
+0055 
+0056 
+0057 sol=param.solini;
+0058 iter = 0; prev_sol = 0;
+0059 
+0060 
+0061 <span class="comment">% Main loop</span>
+0062 <span class="keyword">while</span> 1
+0063     
+0064     <span class="comment">%</span>
+0065     <span class="keyword">if</span> param.verbose &gt;= 1
+0066         fprintf(<span class="string">'Iteration %i:\n'</span>, iter);
+0067     <span class="keyword">end</span>
+0068     
+0069     iter_BT=0;i=0;
+0070     
+0071     <span class="comment">%compute gradient objective function</span>
+0072     g=<a href="grad_of.html" class="code" title="function [ g ] = grad_of( x, y, F, Ft )">grad_of</a>(sol,y,param.A,param.At);
+0073     
+0074    
+0075     
+0076     <span class="comment">% backtracking</span>
+0077     <span class="keyword">while</span> 1
+0078         
+0079         iter_BT=iter_BT+1;
+0080         i=i+1;
+0081         param.Lhat=(param.eta)^i*param.L;
+0082         param.gamma=1/param.Lhat;
+0083         
+0084         <span class="comment">%gradient descent step</span>
+0085         dummy=sol-param.gamma*g;
+0086         
+0087         
+0088         <span class="comment">%projection (real)positive quadrant</span>
+0089         dummy=real(dummy);
+0090         dummy(dummy&lt;0)=0;
+0091     
+0092         e_norm=0.5*norm(param.A(dummy)-y).^2;
+0093         of=e_norm;
+0094         
+0095         G=.5*norm(param.A(sol)-y,2)^2 + dot(dummy(:)-sol(:),real(g)) +.5*param.Lhat*norm(dummy-sol,2)^2;
+0096         
+0097         <span class="comment">% backtracking criteria</span>
+0098         <span class="keyword">if</span> of&lt; G
+0099             crit_BT = <span class="string">'CONV'</span>;
+0100             <span class="keyword">break</span>; 
+0101         <span class="keyword">end</span>
+0102         <span class="keyword">if</span> iter_BT&gt;param.max_iter_BT
+0103             crit_BT = <span class="string">'MAX_ITER'</span>;
+0104             <span class="keyword">break</span>;
+0105         <span class="keyword">end</span>
+0106         
+0107     <span class="keyword">end</span>
+0108    
+0109     
+0110     <span class="keyword">if</span> param.verbose &gt;= 1 &amp;&amp; strcmp(crit_BT,<span class="string">'MAX_ITER'</span>)
+0111         fprintf(<span class="string">' Stopping criterion BT: %s \n\n'</span>, crit_BT);
+0112     <span class="keyword">end</span>
+0113     
+0114     <span class="comment">% Update variables</span>
+0115     sol=dummy;
+0116     param.L=param.Lhat;
+0117         
+0118     rel_var = norm(sol - prev_sol)/norm(prev_sol);
+0119     
+0120     
+0121     <span class="keyword">if</span> param.verbose &gt;= 1
+0122         fprintf(<span class="string">'  0.5*(||Ax-b||_2)^2 = %e, rel_var = %e\n'</span>, <span class="keyword">...</span>
+0123             e_norm, rel_var);
+0124     <span class="keyword">end</span>
+0125     
+0126     <span class="keyword">if</span> (rel_var &lt; param.rel_obj || norm(sol-prev_sol)==0)
+0127         crit_ncFB = <span class="string">'REL_NORM'</span>;
+0128         <span class="keyword">break</span>;
+0129     <span class="keyword">elseif</span> iter &gt;= param.max_iter
+0130         crit_ncFB = <span class="string">'MAX_IT'</span>;
+0131         <span class="keyword">break</span>;
+0132     <span class="keyword">end</span>
+0133     
+0134     <span class="comment">% Update variables</span>
+0135     iter = iter + 1;
+0136     prev_sol = sol;
+0137       
+0138 <span class="keyword">end</span>
+0139 
+0140 <span class="comment">% Log</span>
+0141 <span class="keyword">if</span> param.verbose&gt;=1
+0142     
+0143     fprintf(<span class="string">'\n Solution found:\n'</span>);
+0144     
+0145     <span class="comment">% Residual</span>
+0146     dummy = param.A(sol); res = norm(y(:)-dummy(:), 2);
+0147     fprintf(<span class="string">'||y-Ax||_2=%e\n'</span>, res);
+0148     
+0149     <span class="comment">% Stopping criterion</span>
+0150     fprintf(<span class="string">' %i iterations\n'</span>, iter);
+0151     fprintf(<span class="string">' Stopping criterion: %s \n\n'</span>, crit_ncFB);
+0152     
+0153 <span class="keyword">end</span>
+0154 
+0155 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 18-Jul-2013 19:25:15 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

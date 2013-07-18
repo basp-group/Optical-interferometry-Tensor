@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of soft_sgv</title>
+  <meta name="keywords" content="soft_sgv">
+  <meta name="description" content="soft_sgv computes the singular value soft-threasholding and PSD">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">CO4OI</a> &gt; <a href="index.html">misc</a> &gt; soft_sgv.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for CO4OI/misc&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>soft_sgv
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>soft_sgv computes the singular value soft-threasholding and PSD</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [p,r]=soft_sgv(z, N, lambda) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> soft_sgv computes the singular value soft-threasholding and PSD
+ projection
+
+   INPUTS
+   
+   - N: dimension of the squared matrix
+   - z: matrix (unfolded)
+   - lambda: soft-thresholding parameter
+
+   OUTPUTS
+   
+   - p: low-rank approximation of the matrix (unfolded)
+   - r: rank of the low-rank approximation matrix</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [p,r]=soft_sgv(z, N, lambda)</a>
+0002 <span class="comment">% soft_sgv computes the singular value soft-threasholding and PSD</span>
+0003 <span class="comment">% projection</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   INPUTS</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   - N: dimension of the squared matrix</span>
+0008 <span class="comment">%   - z: matrix (unfolded)</span>
+0009 <span class="comment">%   - lambda: soft-thresholding parameter</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   OUTPUTS</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%   - p: low-rank approximation of the matrix (unfolded)</span>
+0014 <span class="comment">%   - r: rank of the low-rank approximation matrix</span>
+0015 <span class="comment">%</span>
+0016 
+0017 <span class="comment">%reshape in matrix form</span>
+0018 z = reshape(z, [], N);
+0019 
+0020 <span class="comment">% symmetrization for rounding errors</span>
+0021 z=(z+z.')/2;
+0022 
+0023 [V,Sigma] = eig(z);
+0024 aux=diag(Sigma);
+0025 
+0026 
+0027 <span class="comment">% soft-thresholding</span>
+0028 aux=max(aux-lambda,0);
+0029 <span class="comment">% PSD projection</span>
+0030 aux(aux&lt;0)=0;
+0031 <span class="comment">% rank</span>
+0032 r=length(find(aux~=0));
+0033 
+0034 
+0035 <span class="comment">%build low-rank approximation</span>
+0036 Sigma=diag(aux);
+0037 p = V * Sigma * V';
+0038 
+0039 <span class="comment">%unfold solution</span>
+0040 p = p(:);
+0041 <span class="keyword">end</span>
+0042</pre></div>
+<hr><address>Generated on Thu 18-Jul-2013 19:25:15 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

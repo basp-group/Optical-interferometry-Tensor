@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of build_redundant_meas</title>
+  <meta name="keywords" content="build_redundant_meas">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">CO4OI</a> &gt; <a href="index.html">misc</a> &gt; build_redundant_meas.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for CO4OI/misc&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>build_redundant_meas
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [ yr ] = build_redundant_meas( y, T ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">
+ build_redundant_meas - Replicates the measurements (according to table T)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ yr ] = build_redundant_meas( y, T )</a>
+0002 <span class="comment">%</span>
+0003 <span class="comment">% build_redundant_meas - Replicates the measurements (according to table T)</span>
+0004 
+0005 
+0006 M=size(T,1);
+0007 
+0008 yr=zeros(6*M,1);
+0009 iT=1;
+0010 
+0011 <span class="keyword">for</span> i=1:M
+0012     
+0013     <span class="keyword">if</span>(T(i,1)&gt;T(i,2) &amp;&amp; T(i,2)&gt;T(i,3))
+0014         yr(iT,:)=y(i,:);
+0015         iT=iT+1;
+0016         yr(iT,:)=y(i,:);
+0017         
+0018         iT=iT+1;
+0019         yr(iT,:)=y(i,:);
+0020         
+0021         iT=iT+1;
+0022         yr(iT,:)=y(i,:);
+0023         
+0024         iT=iT+1;
+0025         yr(iT,:)=y(i,:);
+0026         
+0027         iT=iT+1;
+0028         yr(iT,:)=y(i,:);
+0029         iT=iT+1;
+0030         
+0031     <span class="keyword">elseif</span> (T(i,1)&gt;T(i,2) &amp;&amp; T(i,2)==T(i,3))
+0032         yr(iT,:)=y(i,:);
+0033         iT=iT+1;
+0034         yr(iT,:)=y(i,:);
+0035         
+0036         iT=iT+1;
+0037         yr(iT,:)=y(i,:);
+0038         
+0039         iT=iT+1;
+0040         
+0041     <span class="keyword">elseif</span> (T(i,1)==T(i,2) &amp;&amp; T(i,2)&gt;T(i,3))
+0042         yr(iT,:)=y(i,:);
+0043         iT=iT+1;
+0044         yr(iT,:)=y(i,:);
+0045         
+0046         iT=iT+1;
+0047         yr(iT,:)=y(i,:);
+0048         
+0049         iT=iT+1; 
+0050         
+0051     <span class="keyword">elseif</span> (T(i,1)==T(i,2) &amp;&amp; T(i,2)==T(i,3))
+0052         yr(iT,:)=y(i,:);
+0053         iT=iT+1;
+0054     <span class="keyword">end</span>
+0055     
+0056     yr(all(yr==0,2),:)=[];
+0057     
+0058 
+0059 <span class="keyword">end</span>
+0060</pre></div>
+<hr><address>Generated on Thu 18-Jul-2013 19:25:15 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

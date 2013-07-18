@@ -1,27 +1,42 @@
-CO4OI: Convex Optimisation for Optical Interferometry
+
+        CO4OI: Convex Optimisation for Optical Interferometry
                 
   ----------------------------------------------------------------
 
 DESCRIPTION
   This is a Matlab implementation of the tensor-based algorithms for
   optical-interferometric imaging presented in:
-  
-    [1] A. Auria, R. E. Carrillo, J.-P. Thiran and Y. Wiaux. "Convex optimisation for optical-interferometric imaging", 
-    submitted to Monthly Notices of the Royal Astronomical Society, 2013.
+    [1] A. Auria, R. E. Carrillo, J.-P. Thiran and Y. Wiaux.  
+    "Convex optimisation for optical-interferometric imaging", submitted 
+    to Monthly Notices of the Royal Astronomical Society, 2013.
 
 AUTHORS
-  A. Auria (http://people.epfl.ch/anna.auria),
-  R. E. Carillo (http://people.epfl.ch/rafael.carrillo),
-  J.-P. Thiran (http://people.epfl.ch/jean-philippe.thiran),
-  Y. Wiaux (http://people.epfl.ch/yves.wiaux).
+  A. Auria (http://people.epfl.ch/anna.auria)
+  R. E. Carillo (http://people.epfl.ch/rafael.carrillo)
+  J.-P. Thiran (http://people.epfl.ch/jean-philippe.thiran)
+  Y. Wiaux (http://people.epfl.ch/yves.wiaux)
+
+EXPERIMENTS
+  To test a reconstruction using the alternate minimization (AM) method,
+  run the script AM_example.m. 
+
+  To test a reconstruction using the nuclear norm minimization (NM)
+  method, run the script NM_example.m.
 
 
 REFERENCES
   When referencing this code, please cite our related paper:
-  
-    [1] A. Auria, R. E. Carrillo, J.-P. Thiran and Y. Wiaux. "Convex optimisation for optical-interferometric imaging", 
-    submitted to Monthly Notices of the Royal Astronomical Society, 2013.
+    [1] A. Auria, R. E. Carrillo, J.-P. Thiran and Y. Wiaux.  
+    "Convex optimisation for optical-interferometric imaging", submitted 
+    to Monthly Notices of the Royal Astronomical Society, 2013.
 
+DOCUMENTATION
+   See doc/index.html
+
+INSTALLATION 
+  To run the NM functions, the TP toolbox (http://tptool.sztaki.hu) 
+  must be installed. Otherwise the code should run as is, without 
+  any additional installation.
 
 DOWNLOAD
   https://github.com/basp-group/co-oi
@@ -32,7 +47,6 @@ SUPPORT
 
 NOTES
   The code is not optimized and is given for educational purpose.
-  Code will be available by mid July 2013.
   
 LICENSE
   co4oi: Convex optimization for optical interferometry

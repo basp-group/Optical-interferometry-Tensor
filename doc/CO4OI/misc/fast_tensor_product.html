@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of fast_tensor_product</title>
+  <meta name="keywords" content="fast_tensor_product">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">CO4OI</a> &gt; <a href="index.html">misc</a> &gt; fast_tensor_product.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for CO4OI/misc&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>fast_tensor_product
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [ X ] = fast_tensor_product( x ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">
+   fast_tensor_product - computes the tensor product of vector x with
+   itself
+
+   OUTPUT: X = x \otimes x \otimes x</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ X ] = fast_tensor_product( x )</a>
+0002 <span class="comment">%</span>
+0003 <span class="comment">%   fast_tensor_product - computes the tensor product of vector x with</span>
+0004 <span class="comment">%   itself</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%   OUTPUT: X = x \otimes x \otimes x</span>
+0007 
+0008 N=size(x,1);
+0009 x1=x.'; x1=x1(ones(1,N),:,ones(1,N)); <span class="comment">%equivalent to x1=repmat(x.',[N,1,N]);</span>
+0010 
+0011 x2=x(:,ones(1,N), ones(1,N)); <span class="comment">%equivalent x2=repmat(x,[1,N,N]);</span>
+0012 
+0013 x3=zeros(1,1,N);
+0014 x3(1,1,:)=x;
+0015 
+0016 x3=x3(ones(1,N),ones(1,N),:);<span class="comment">%equivalent x3=repmat(x3,[N,N,1]);</span>
+0017 
+0018 X=x1.*x2.*x3;
+0019 
+0020 <span class="keyword">end</span>
+0021</pre></div>
+<hr><address>Generated on Thu 18-Jul-2013 19:25:15 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

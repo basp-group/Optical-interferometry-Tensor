@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of gen_astro_object</title>
+  <meta name="keywords" content="gen_astro_object">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">CO4OI</a> &gt; <a href="index.html">misc</a> &gt; gen_astro_object.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for CO4OI/misc&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>gen_astro_object
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function x = gen_astro_object( paramIM ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">
+ gen_astro_object generates an image with the specifications contained in
+ structure paramIM
+
+ paramIM is a Matlab structure containing the following fields:
+
+   - dim: dimensions of the image
+   - type: type of image to be generated. It admits the following values:
+       -'image' loads image from file (natural image resized)
+       -'spikes' creates a synthetic image with paramIM.k spykes
+   - k: number of spikes in a synthetic image
+   - filename: file name cointaining the image to be generated
+   - F0: zero frequency (sum of the flux)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function x = gen_astro_object( paramIM )</a>
+0002 <span class="comment">%</span>
+0003 <span class="comment">% gen_astro_object generates an image with the specifications contained in</span>
+0004 <span class="comment">% structure paramIM</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% paramIM is a Matlab structure containing the following fields:</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%   - dim: dimensions of the image</span>
+0009 <span class="comment">%   - type: type of image to be generated. It admits the following values:</span>
+0010 <span class="comment">%       -'image' loads image from file (natural image resized)</span>
+0011 <span class="comment">%       -'spikes' creates a synthetic image with paramIM.k spykes</span>
+0012 <span class="comment">%   - k: number of spikes in a synthetic image</span>
+0013 <span class="comment">%   - filename: file name cointaining the image to be generated</span>
+0014 <span class="comment">%   - F0: zero frequency (sum of the flux)</span>
+0015 <span class="comment">%</span>
+0016 
+0017 
+0018 n=paramIM.dim(1);
+0019 m=paramIM.dim(2);
+0020 
+0021 
+0022 <span class="keyword">if</span> ~isfield(paramIM, <span class="string">'type'</span>), paramIM.type=<span class="string">'spikes'</span>;<span class="keyword">end</span>
+0023 <span class="keyword">if</span> ~isfield(paramIM, <span class="string">'k'</span>), paramIM.k = round(0.1*n*m); <span class="keyword">end</span>
+0024 
+0025 
+0026 <span class="keyword">if</span> strcmp(paramIM.type,<span class="string">'spikes'</span>)
+0027     <span class="comment">%sparse synthetic image %%</span>
+0028     x= zeros(n,m);
+0029     k=paramIM.k/(n*m);
+0030     x=vdsmask_full(n,m,k); x=double(x);
+0031     
+0032     x(x==1)=rand(paramIM.k,1);
+0033     
+0034 <span class="keyword">elseif</span> strcmp(paramIM.type,<span class="string">'image'</span>)
+0035     <span class="comment">%natural resized image %%</span>
+0036     load(paramIM.fileimage);
+0037     x=eval(<span class="string">'x'</span>);
+0038     x=real(x);
+0039     x(x&lt;0)=0;
+0040     
+0041     
+0042 <span class="keyword">end</span>
+0043 
+0044 x=paramIM.F0*x/sum(sum(x)); <span class="comment">% normalisation (flux =1)</span>
+0045 
+0046 
+0047 <span class="keyword">end</span>
+0048</pre></div>
+<hr><address>Generated on Thu 18-Jul-2013 19:25:15 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>
